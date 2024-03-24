@@ -1,2 +1,2 @@
 # leetcode
-practice practice for technical interviews
+practice problems for technical interviews
