@@ -1,5 +1,5 @@
 
-LEET CODE SQL 50 ! 
+# LEET CODE SQL 50 ! 
 
 1757. Recyclable and Low Fat Products
 
@@ -1042,6 +1042,30 @@ User 2 made 2 requests where one was confirmed and the other timed out. The conf
 
 ### MY SOLUTION
 ```sql
+-- Write your PostgreSQL query statement below
+
+-- confirmation rate = num of messages marked 'confirmed' / total num of confirmation messages
+
+--first I think I need to left join signups table with confirmations table, because not all users are in the confirmation table: 
+
+with cte_1 as (
+select s.user_id as user_id_a,
+         s.time_stamp, 
+        c.user_id, 
+        c.time_stamp,
+         c.action,
+    case when action = 'timeout' then 0
+    when action is null then 0
+    when action = 'confirmed' then 1 end action_num
+
+from signups s 
+left join confirmations c 
+on s.user_id = c.user_id
+)
+
+select user_id_a, sum(action_num)/count(action)) as confirmation_rate 
+from cte_1 
+group by user_id_a;
 
 ```
 
