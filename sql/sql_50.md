@@ -1063,9 +1063,10 @@ left join confirmations c
 on s.user_id = c.user_id
 )
 
-select user_id_a, sum(action_num)/count(action)) as confirmation_rate 
+select user_id_a as user_id, round(sum(action_num)/count(coalesce(action,'blank'))::numeric,2) as confirmation_rate 
 from cte_1 
-group by user_id_a;
+group by user_id_a
+order by confirmation_rate asc; 
 
 ```
 
