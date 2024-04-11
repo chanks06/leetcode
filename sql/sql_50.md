@@ -2054,16 +2054,159 @@ having count(distinct product_key) = (select count(product_key) from Product);
 
 ###################################################################
 
-### MY SOLUTION
-```sql
+1731. The Number of Employees Which Report to Each Employee
 
+Table: Employees
+
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| employee_id | int      |
+| name        | varchar  |
+| reports_to  | int      |
+| age         | int      |
++-------------+----------+
+employee_id is the column with unique values for this table.
+This table contains information about the employees and the id of the manager they report to. Some employees do not report to anyone (reports_to is null). 
+ 
+
+For this problem, we will consider a manager an employee who has at least 1 other employee reporting to them.
+
+Write a solution to report the ids and the names of all managers, the number of employees who report directly to them, and the average age of the reports rounded to the nearest integer.
+
+Return the result table ordered by employee_id.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Employees table:
++-------------+---------+------------+-----+
+| employee_id | name    | reports_to | age |
++-------------+---------+------------+-----+
+| 9           | Hercy   | null       | 43  |
+| 6           | Alice   | 9          | 41  |
+| 4           | Bob     | 9          | 36  |
+| 2           | Winston | null       | 37  |
++-------------+---------+------------+-----+
+Output: 
++-------------+-------+---------------+-------------+
+| employee_id | name  | reports_count | average_age |
++-------------+-------+---------------+-------------+
+| 9           | Hercy | 2             | 39          |
++-------------+-------+---------------+-------------+
+Explanation: Hercy has 2 people report directly to him, Alice and Bob. Their average age is (41+36)/2 = 38.5, which is 39 after rounding it to the nearest integer.
+Example 2:
+
+Input: 
+Employees table:
++-------------+---------+------------+-----+ 
+| employee_id | name    | reports_to | age |
+|-------------|---------|------------|-----|
+| 1           | Michael | null       | 45  |
+| 2           | Alice   | 1          | 38  |
+| 3           | Bob     | 1          | 42  |
+| 4           | Charlie | 2          | 34  |
+| 5           | David   | 2          | 40  |
+| 6           | Eve     | 3          | 37  |
+| 7           | Frank   | null       | 50  |
+| 8           | Grace   | null       | 48  |
++-------------+---------+------------+-----+ 
+Output: 
++-------------+---------+---------------+-------------+
+| employee_id | name    | reports_count | average_age |
+| ----------- | ------- | ------------- | ----------- |
+| 1           | Michael | 2             | 40          |
+| 2           | Alice   | 2             | 37          |
+| 3           | Bob     | 1             | 37          |
++-------------+---------+---------------+-------------+
+
+
+### MY SOLUTION
+
+I used a self join and a couple aggregate functions to figure this out. 
+
+```sql
+select distinct e1.employee_id, e1.name, count(e2.reports_to) as reports_count, avg(e2.age)::int as average_age from employees as e1
+join employees as e2 on
+e1.employee_id = e2.reports_to 
+group by e1.employee_id, e1.name
+order by employee_id;
 ```
 
 ###################################################################
 
-### MY SOLUTION
-```sql
+1789. Primary Department for Each Employee
 
+Table: Employee
+
++---------------+---------+
+| Column Name   |  Type   |
++---------------+---------+
+| employee_id   | int     |
+| department_id | int     |
+| primary_flag  | varchar |
++---------------+---------+
+(employee_id, department_id) is the primary key (combination of columns with unique values) for this table.
+employee_id is the id of the employee.
+department_id is the id of the department to which the employee belongs.
+primary_flag is an ENUM (category) of type ('Y', 'N'). If the flag is 'Y', the department is the primary department for the employee. If the flag is 'N', the department is not the primary.
+ 
+
+Employees can belong to multiple departments. When the employee joins other departments, they need to decide which department is their primary department. Note that when an employee belongs to only one department, their primary column is 'N'.
+
+Write a solution to report all the employees with their primary department. For employees who belong to one department, report their only department.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Employee table:
++-------------+---------------+--------------+
+| employee_id | department_id | primary_flag |
++-------------+---------------+--------------+
+| 1           | 1             | N            |
+| 2           | 1             | Y            |
+| 2           | 2             | N            |
+| 3           | 3             | N            |
+| 4           | 2             | N            |
+| 4           | 3             | Y            |
+| 4           | 4             | N            |
++-------------+---------------+--------------+
+Output: 
++-------------+---------------+
+| employee_id | department_id |
++-------------+---------------+
+| 1           | 1             |
+| 2           | 1             |
+| 3           | 3             |
+| 4           | 3             |
++-------------+---------------+
+Explanation: 
+- The Primary department for employee 1 is 1.
+- The Primary department for employee 2 is 1.
+- The Primary department for employee 3 is 3.
+- The Primary department for employee 4 is 3.
+
+
+
+### MY SOLUTION
+
+conditions are if flag is 'y' or if there is only one department_id associated with the employee_id: 
+
+```sql
+select employee_id, department_id 
+from employee
+where primary_flag = 'Y' or (employee_id in 
+(select employee_id from employee group by employee_id having count(department_id) = 1));
 ```
 
 ###################################################################
