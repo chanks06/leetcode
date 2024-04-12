@@ -2210,24 +2210,206 @@ where primary_flag = 'Y' or (employee_id in
 ```
 
 ###################################################################
+ 610. Triangle Judgement
+
+ Table: Triangle
+
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| x           | int  |
+| y           | int  |
+| z           | int  |
++-------------+------+
+In SQL, (x, y, z) is the primary key column for this table.
+Each row of this table contains the lengths of three line segments.
+ 
+
+Report for every three line segments whether they can form a triangle.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Triangle table:
++----+----+----+
+| x  | y  | z  |
++----+----+----+
+| 13 | 15 | 30 |
+| 10 | 20 | 15 |
++----+----+----+
+Output: 
++----+----+----+----------+
+| x  | y  | z  | triangle |
++----+----+----+----------+
+| 13 | 15 | 30 | No       |
+| 10 | 20 | 15 | Yes      |
++----+----+----+----------+
+
 
 ### MY SOLUTION
-```sql
 
+the sum of any two sides must be larger than the other side. This case-when statement checks that.
+
+```sql
+select x,y,z,
+    case 
+        when abs(x) + abs(y) > abs(z) 
+        and abs(x) + abs(z) > abs(y) 
+        and abs(y) + abs(z) > abs(x) then 'Yes'
+        else 'No' 
+    end as triangle 
+from triangle;
 ```
 
 ###################################################################
 
-### MY SOLUTION
-```sql
+180. Consecutive Numbers
 
+Table: Logs
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| num         | varchar |
++-------------+---------+
+In SQL, id is the primary key for this table.
+id is an autoincrement column.
+ 
+
+Find all numbers that appear at least three times consecutively.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Logs table:
++----+-----+
+| id | num |
++----+-----+
+| 1  | 1   |
+| 2  | 1   |
+| 3  | 1   |
+| 4  | 2   |
+| 5  | 1   |
+| 6  | 2   |
+| 7  | 2   |
++----+-----+
+Output: 
++-----------------+
+| ConsecutiveNums |
++-----------------+
+| 1               |
++-----------------+
+Explanation: 1 is the only number that appears consecutively for at least three times.
+
+
+### MY SOLUTION
+
+This is good example of using lag() and lead(). The following query checks if the number before and after the current number are all the same, then we've found the number that appears consecutively 3x. 
+
+```sql
+with cte_1 as 
+(
+select id, num, 
+        lag(num) over (order by id) as prev_num, 
+        lead(num) over (order by id) as next_num
+from logs) 
+
+select distinct num as ConsecutiveNums
+from cte_1
+where num = prev_num and num = next_num;
 ```
 
 ###################################################################
 
-### MY SOLUTION
-```sql
+1204. Last Person to Fit in the Bus
 
+Table: Queue
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| person_id   | int     |
+| person_name | varchar |
+| weight      | int     |
+| turn        | int     |
++-------------+---------+
+person_id column contains unique values.
+This table has the information about all people waiting for a bus.
+The person_id and turn columns will contain all numbers from 1 to n, where n is the number of rows in the table.
+turn determines the order of which the people will board the bus, where turn=1 denotes the first person to board and turn=n denotes the last person to board.
+weight is the weight of the person in kilograms.
+ 
+
+There is a queue of people waiting to board a bus. However, the bus has a weight limit of 1000 kilograms, so there may be some people who cannot board.
+
+Write a solution to find the person_name of the last person that can fit on the bus without exceeding the weight limit. The test cases are generated such that the first person does not exceed the weight limit.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Queue table:
++-----------+-------------+--------+------+
+| person_id | person_name | weight | turn |
++-----------+-------------+--------+------+
+| 5         | Alice       | 250    | 1    |
+| 4         | Bob         | 175    | 5    |
+| 3         | Alex        | 350    | 2    |
+| 6         | John Cena   | 400    | 3    |
+| 1         | Winston     | 500    | 6    |
+| 2         | Marie       | 200    | 4    |
++-----------+-------------+--------+------+
+Output: 
++-------------+
+| person_name |
++-------------+
+| John Cena   |
++-------------+
+Explanation: The folowing table is ordered by the turn for simplicity.
++------+----+-----------+--------+--------------+
+| Turn | ID | Name      | Weight | Total Weight |
++------+----+-----------+--------+--------------+
+| 1    | 5  | Alice     | 250    | 250          |
+| 2    | 3  | Alex      | 350    | 600          |
+| 3    | 6  | John Cena | 400    | 1000         | (last person to board)
+| 4    | 2  | Marie     | 200    | 1200         | (cannot board)
+| 5    | 4  | Bob       | 175    | ___          |
+| 6    | 1  | Winston   | 500    | ___          |
++------+----+-----------+--------+--------------+
+
+
+### MY SOLUTION
+
+using a window function to produce a rolling sum of weight of passengers: 
+
+```sql
+with rolling_sum as 
+(
+select *, 
+       sum(weight) over (order by turn) as rolling_sum 
+from queue) 
+
+select person_name 
+from rolling_sum 
+where rolling_sum <= 1000
+order by turn desc
+limit 1; 
 ```
 
 ###################################################################
