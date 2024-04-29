@@ -1592,8 +1592,61 @@ group by query_name
 
 ###################################################################
 
+1667. Fix Names in a Table
+
+
+Table: Users
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| user_id        | int     |
+| name           | varchar |
++----------------+---------+
+user_id is the primary key (column with unique values) for this table.
+This table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.
+
+ 
+
+Write a solution to fix the names so that only the first character is uppercase and the rest are lowercase.
+
+Return the result table ordered by user_id.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Users table:
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | aLice |
+| 2       | bOB   |
++---------+-------+
+Output: 
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | Alice |
+| 2       | Bob   |
++---------+-------+
+
 ### MY SOLUTION
 ```sql
+-- I think i have to use the SUBSTRING() and UPPER() functions 
+
+
+with cte_1 as 
+(select user_id, 
+       upper(substring(name, 1, 1)) as first_letter, 
+       lower(substring(name,2,10)) as the_rest 
+from users)
+
+select user_id, concat(first_letter, the_rest) as name from cte_1
+order by user_id; 
 
 ```
 
