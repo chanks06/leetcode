@@ -1592,26 +1592,6 @@ group by query_name
 
 ###################################################################
 
-<<<<<<< HEAD
-1667. Fix Names in a Table
-
-
-Table: Users
-
-+----------------+---------+
-| Column Name    | Type    |
-+----------------+---------+
-| user_id        | int     |
-| name           | varchar |
-+----------------+---------+
-user_id is the primary key (column with unique values) for this table.
-This table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.
-
- 
-
-Write a solution to fix the names so that only the first character is uppercase and the rest are lowercase.
-
-Return the result table ordered by user_id.
 =======
 1141. User Activity for the Past 30 Days I
 
@@ -1634,7 +1614,7 @@ Note that each session belongs to exactly one user.
 Write a solution to find the daily active user count for a period of 30 days ending 2019-07-27 inclusively. A user was active on someday if they made at least one activity on that day.
 
 Return the result table in any order.
->>>>>>> 006ac7ca82b9189526912c5d12e11db496e82254
+
 
 The result format is in the following example.
 
@@ -1643,21 +1623,7 @@ The result format is in the following example.
 Example 1:
 
 Input: 
-<<<<<<< HEAD
-Users table:
-+---------+-------+
-| user_id | name  |
-+---------+-------+
-| 1       | aLice |
-| 2       | bOB   |
-+---------+-------+
-Output: 
-+---------+-------+
-| user_id | name  |
-+---------+-------+
-| 1       | Alice |
-| 2       | Bob   |
-+---------+-------+
+
 =======
 Activity table:
 +---------+------------+---------------+---------------+
@@ -1688,22 +1654,8 @@ Explanation: Note that we do not care about days with zero active users.
 ### MY SOLUTION
 
 ```sql
--- I think i have to use the SUBSTRING() and UPPER() functions 
 
 
-with cte_1 as 
-(select user_id, 
-       upper(substring(name, 1, 1)) as first_letter, 
-       lower(substring(name,2,10)) as the_rest 
-from users)
-
-select user_id, concat(first_letter, the_rest) as name from cte_1
-order by user_id; 
-
-select activity_date as day, count(distinct user_id ) as active_users
-from activity
-where activity_date between '2019-06-28' and '2019-07-27'
-group by activity_date;
 
 
 ```
@@ -2703,6 +2655,55 @@ limit 1) as results;
 ```
 
 ###################################################################
+
+1527. Patients With a Condition
+
+Table: Patients
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| patient_id   | int     |
+| patient_name | varchar |
+| conditions   | varchar |
++--------------+---------+
+patient_id is the primary key (column with unique values) for this table.
+'conditions' contains 0 or more code separated by spaces. 
+This table contains information of the patients in the hospital.
+
+ 
+
+Write a solution to find the patient_id, patient_name, and conditions of the patients who have Type I Diabetes. Type I Diabetes always starts with DIAB1 prefix.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Patients table:
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 1          | Daniel       | YFEV COUGH   |
+| 2          | Alice        |              |
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 |
+| 5          | Alain        | DIAB201      |
++------------+--------------+--------------+
+Output: 
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 | 
++------------+--------------+--------------+
+Explanation: Bob and George both have a condition that starts with DIAB1.
+
+
 
 ### MY SOLUTION
 ```sql
